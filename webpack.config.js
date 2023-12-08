@@ -1,9 +1,9 @@
-const path    = require("path")
-const webpack = require("webpack")
+const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
-  mode: "production",
-  devtool: "source-map",
+  mode: process.env.NODE_ENV || "production",
+  devtool: process.env.NODE_ENV === "production" ? "cheap-module-source-map" : "source-map",
   entry: {
     application: "./app/javascript/application.js"
   },
@@ -12,9 +12,12 @@ module.exports = {
     sourceMapFilename: "[file].map",
     path: path.resolve(__dirname, "app/assets/builds"),
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
   plugins: [
-    new webpack.optimize.LimitChunkCountPlugin({
-      maxChunks: 1
-    })
-  ]
-}
+    new webpack.EnvironmentPlugin(['NODE_ENV']), // Make sure NODE_ENV is available in your app
+  ],
+};
